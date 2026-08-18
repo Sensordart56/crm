@@ -58,7 +58,7 @@ export function recommendNextStep(member: Member, activities: Activity[], now = 
   ]
 
   return {
-    title: 'Simulated - deterministic rules; no LLM call.',
+    title: 'Simulated — deterministic rules; no LLM call.',
     recommendation,
     rationale,
     evidence,
