@@ -1,4 +1,4 @@
-import type { Professional } from '../content/taskData'
+import { totalScore, type Professional } from '../content/taskData'
 
 function escapeCsv(value: string | number): string {
   const text = String(value).replaceAll('"', '""')
@@ -16,7 +16,7 @@ export function professionalsToCsv(professionals: Professional[]): string {
     person.scores.potentialContribution,
     person.scores.likelyMemberValue,
     person.scores.evidenceStrength,
-    person.total,
+    totalScore(person),
     person.space,
   ])
   return [headers, ...rows].map((row) => row.map(escapeCsv).join(',')).join('\n')
