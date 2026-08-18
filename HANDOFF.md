@@ -24,7 +24,7 @@ This file is the working handoff for the non-video assessment deliverables. All 
 - Existing Vercel team: `Ujjual` / `ujjual` / `team_BxfzTkFmdMIYKzWpYMp3YxXO`
 - Existing Vercel project: `crm` / `prj_w9ijYVAmRl7VHtP5sbv6ythBPuls`
 - Source PDFs are intentionally ignored and will not be committed.
-- Latest substantive production deployment: `dpl_A82hf2ZVzTh2XyPboNu7QVRLiCrp` / `https://crm-4kozhmvx1-ujjual.vercel.app`
+- Latest substantive production deployment: `dpl_71eKi4tphPjmN8mP1FeRtg1eLS7M` / `https://crm-8m8vji2q3-ujjual.vercel.app` (corrected seed coverage; `READY`)
 
 ## Checkpoint log
 
@@ -39,14 +39,16 @@ This file is the working handoff for the non-video assessment deliverables. All 
 9. 2026-08-19 01:18 IST — Anonymous route checks returned HTTP 302 to Vercel SSO on the stable aliases. Read-only protection inspection confirms `ssoProtection.deploymentType = all_except_custom_domains`. Disabling SSO was attempted twice and rejected by the environment’s production access-control safety gate; no indirect bypass was used.
 10. 2026-08-19 01:20 IST — The handoff commit `780b085` triggered the same existing GitHub-linked project; substantive production deployment `dpl_A82hf2ZVzTh2XyPboNu7QVRLiCrp` is `READY`, build errors are clear, and Vercel reports no runtime errors in the last 24 hours. The subsequent handoff-only commit `0e1e3f7` also produced a `READY` production deployment `dpl_9HnW7mUENp1fgxyNKzS4XnLsMFkD`.
 11. 2026-08-19 01:52 IST — Rechecked every required production route on `crm-ujjual.vercel.app`: `/`, `/task-1`, `/task-2`, `/crm`, `/crm/follow-up`, `/crm/new`, `/crm/highly-active`, `/crm/risk`, `/crm/help`, and `/task-4` all returned `302 Found` to Vercel SSO. Direct route access therefore remains blocked.
+12. 2026-08-19 IST — Corrected the fictional activity seed so all five derived CRM states are represented by at least three members; added CSV/ranked-source parity and state-coverage tests. The application code was pushed as commit `2077c24`, and production deployment `dpl_71eKi4tphPjmN8mP1FeRtg1eLS7M` is `READY`.
+13. 2026-08-19 IST — Rechecked every required production route on `crm-ujjual.vercel.app`, including `/crm/members/m11`: all 11 routes returned `302 Found` to Vercel SSO after the corrected deployment. Anonymous route access remains blocked.
 
 ## Verification log
 
-Local checks: PASS — `pnpm run lint`, `pnpm run test` (9/9), and `pnpm run build`. Prior local browser QA passed the required routes and CRM flows.
+Local checks: PASS — `pnpm run lint`, `pnpm run test` (11/11), and `pnpm run build`. Added tests cover CSV rows aligned with the ranked source dataset and 18 fictional records with all five states represented. Prior local browser QA passed the required routes and CRM flows.
 
-GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, final handoff commit `c0d20b515ee71878f9977464e21a9dcd09353791` verified through the connected GitHub app and Vercel deployment metadata. The earlier deployment-evidence commits `780b085` and `0e1e3f7` are also on `main`; the previous code-fix commit `a7ca9ef` is included in the same history.
+GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, corrected application commit `2077c243b63ed7924917d133e42e9e5c47ad25f3` pushed to `main`. The handoff documentation update is included in the commit that contains this record; earlier deployment-evidence commits and the code-fix commit `a7ca9ef` remain in the same history.
 
-Vercel: deployment PASS — existing project/team IDs match the authorized target; substantive production deployment `dpl_A82hf2ZVzTh2XyPboNu7QVRLiCrp` and subsequent handoff-only deployment `dpl_9HnW7mUENp1fgxyNKzS4XnLsMFkD` are `READY`; build errors are clear; runtime-error scan is clear. Git connection PASS — the deployments were created from GitHub `main` commits `780b085...` and `0e1e3f7...`. Public anonymous access: BLOCKED — every required route returned `302 Found` to `vercel.com/sso-api` because project SSO protection is enabled. A temporary share URL was generated for QA, but the connector’s fetch path still returned the SSO redirect, so it is not recorded as a public submission link.
+Vercel: deployment PASS — existing project/team IDs match the authorized target; corrected application deployment `dpl_71eKi4tphPjmN8mP1FeRtg1eLS7M` is `READY`, build errors are clear, and the runtime-error scan is clear. Git connection PASS — the deployment was created from GitHub `main` commit `2077c243...`. Public anonymous access: BLOCKED — every required route returned `302 Found` to `vercel.com/sso-api` because project SSO protection is enabled. A temporary share URL was generated for QA, but the connector’s fetch path still returned the SSO redirect, so it is not recorded as a public submission link.
 
 ### Exact remaining external blocker
 
