@@ -4,11 +4,11 @@ This file is the working handoff for the non-video assessment deliverables. All 
 
 ## Submission links
 
-- Task 1 public URL: `PENDING — deploy after commit`
-- Task 2 public URL: `PENDING — deploy after commit`
-- Task 3 live CRM URL: `PENDING — deploy after commit`
+- Task 1 public URL: `https://crm-ujjual.vercel.app/task-1` *(currently protected by Vercel SSO; anonymous access pending)*
+- Task 2 public URL: `https://crm-ujjual.vercel.app/task-2` *(currently protected by Vercel SSO; anonymous access pending)*
+- Task 3 live CRM URL: `https://crm-ujjual.vercel.app/crm` *(currently protected by Vercel SSO; anonymous access pending)*
 - Task 4 video: `[USER TO ADD AFTER RECORDING/UPLOAD]`
-- Task 4 script URL: `PENDING — deploy after commit`
+- Task 4 script URL: `https://crm-ujjual.vercel.app/task-4` *(currently protected by Vercel SSO; anonymous access pending)*
 
 ## Status
 
@@ -24,6 +24,7 @@ This file is the working handoff for the non-video assessment deliverables. All 
 - Existing Vercel team: `Ujjual` / `ujjual` / `team_BxfzTkFmdMIYKzWpYMp3YxXO`
 - Existing Vercel project: `crm` / `prj_w9ijYVAmRl7VHtP5sbv6ythBPuls`
 - Source PDFs are intentionally ignored and will not be committed.
+- Production deployment: `dpl_8BGQ5EkQ7hmSHqfM5P83cv8dyq1U` / `https://crm-44x9d5dam-ujjual.vercel.app`
 
 ## Checkpoint log
 
@@ -31,15 +32,23 @@ This file is the working handoff for the non-video assessment deliverables. All 
 2. 2026-08-19 IST — Extracted and visually reviewed the three-page assignment PDF and twelve-page Friends of Finance orientation guide. The guide is authoritative for the community motto, tone, spaces, and documented member-interaction boundaries.
 3. 2026-08-19 IST — Built the Vite/React/TypeScript submission, added 18 fictional CRM members across all five derived states, and kept all real-person research and all CRM records clearly separated from outreach execution.
 4. 2026-08-19 IST — Local verification passed: TypeScript check, production build, and 9/9 automated tests. Browser QA passed all required routes plus search/filtering, add/reload/reset, activity logging and state recalculation, copyable editable suggestion, and commercial-signal separation. The desktop CRM layout was visually reviewed.
-5. 2026-08-19 IST — Confirmed the existing public GitHub repository `Sensordart56/crm` (default branch `main`, push permission) and existing Vercel team/project (`Ujjual` / `crm`). Commit and deployment evidence are still pending.
+5. 2026-08-19 01:02 IST — Published `main` to the existing public repository `Sensordart56/crm`; commit `4ea6057` triggered the existing Vercel project and exposed the GitHub linkage.
+6. 2026-08-19 01:07 IST — Fixed the Vercel build type error in `src/domain/csv.ts`; pushed commit `a7ca9ef`.
+7. 2026-08-19 01:08 IST — Existing Vercel project deployed commit `a7ca9ef` to production as `dpl_8BGQ5EkQ7hmSHqfM5P83cv8dyq1U`; deployment is `READY` and the stable aliases are present.
+8. 2026-08-19 01:16 IST — Re-ran local lint, tests, and production build: all passed; Vercel reports no runtime errors in the last 24 hours.
+9. 2026-08-19 01:18 IST — Anonymous route checks returned HTTP 302 to Vercel SSO on the stable aliases. Read-only protection inspection confirms `ssoProtection.deploymentType = all_except_custom_domains`. Disabling SSO was attempted twice and rejected by the environment’s production access-control safety gate; no indirect bypass was used.
 
 ## Verification log
 
-Local checks: PASS — TypeScript, production build, 9/9 tests, and required-route/browser interaction QA.
+Local checks: PASS — `pnpm run lint`, `pnpm run test` (9/9), and `pnpm run build`. Prior local browser QA passed the required routes and CRM flows.
 
-GitHub: repository verified through the connected GitHub app; local commit `c7955da` is ready. The attempted public push was stopped by the environment safety gate and requires direct confirmation for this exact destination.
+GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, deployed commit `a7ca9efb63b3d8a51d32c1d2b62f246f937734d2` verified through the connected GitHub app and Vercel deployment metadata. Vercel metadata explicitly reports `githubOrg=Sensordart56`, `githubRepo=crm`, `githubCommitRef=main`, and `githubCommitSha=a7ca9ef...`.
 
-Vercel: existing project verified through the connected Vercel app; Git connection, production deployment, public URL, and anonymous-route results remain pending until external publish authorization is confirmed.
+Vercel: deployment PASS — existing project/team IDs match the authorized target; production deployment `dpl_8BGQ5EkQ7hmSHqfM5P83cv8dyq1U` is `READY`; build errors are clear; runtime-error scan is clear. Git connection PASS — the production deployment was created from the GitHub `main` commit above. Public anonymous access: BLOCKED — every tested route currently returns `302 Found` to `vercel.com/sso-api` because project SSO protection is enabled. A temporary share URL was generated for QA, but the connector’s fetch path still returned the SSO redirect, so it is not recorded as a public submission link.
+
+### Exact remaining external blocker
+
+The only unmet acceptance item is anonymous public access. The existing Vercel project has persistent SSO deployment protection configured for all non-custom domains. Removing that setting is a production access-control weakening and was rejected by the environment safety gate twice. No duplicate project, alternate deployment, force-push, or indirect protection bypass was used. Once the project owner removes SSO in Vercel project settings, the four URLs above are the intended submission links; re-run the private-window route checks before submitting.
 
 ## User-only morning checklist (09:00–10:00 IST)
 
