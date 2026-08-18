@@ -44,7 +44,7 @@ This file is the working handoff for the non-video assessment deliverables. All 
 
 Local checks: PASS — `pnpm run lint`, `pnpm run test` (9/9), and `pnpm run build`. Prior local browser QA passed the required routes and CRM flows.
 
-GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, final handoff commit `780b08553ac81a97765fc46ac062e80e40c07315` verified through the connected GitHub app and Vercel deployment metadata. Vercel metadata explicitly reports `githubOrg=Sensordart56`, `githubRepo=crm`, `githubCommitRef=main`, and `githubCommitSha=780b085...`. The previous code-fix commit `a7ca9ef` is included in `main` history.
+GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, final handoff commit `c0d20b515ee71878f9977464e21a9dcd09353791` verified through the connected GitHub app and Vercel deployment metadata. The earlier deployment-evidence commits `780b085` and `0e1e3f7` are also on `main`; the previous code-fix commit `a7ca9ef` is included in the same history.
 
 Vercel: deployment PASS — existing project/team IDs match the authorized target; substantive production deployment `dpl_A82hf2ZVzTh2XyPboNu7QVRLiCrp` and subsequent handoff-only deployment `dpl_9HnW7mUENp1fgxyNKzS4XnLsMFkD` are `READY`; build errors are clear; runtime-error scan is clear. Git connection PASS — the deployments were created from GitHub `main` commits `780b085...` and `0e1e3f7...`. Public anonymous access: BLOCKED — every required route returned `302 Found` to `vercel.com/sso-api` because project SSO protection is enabled. A temporary share URL was generated for QA, but the connector’s fetch path still returned the SSO redirect, so it is not recorded as a public submission link.
 
