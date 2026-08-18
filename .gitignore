@@ -1,0 +1,25 @@
+# Local dependencies and build output
+node_modules/
+.pnpm-store/
+dist/
+.vercel/
+
+# Assignment source material and local review artifacts
+*.pdf
+tmp/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*.key
+*.pem
+
+# Logs and editor/OS files
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
