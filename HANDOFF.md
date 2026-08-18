@@ -24,7 +24,7 @@ This file is the working handoff for the non-video assessment deliverables. All 
 - Existing Vercel team: `Ujjual` / `ujjual` / `team_BxfzTkFmdMIYKzWpYMp3YxXO`
 - Existing Vercel project: `crm` / `prj_w9ijYVAmRl7VHtP5sbv6ythBPuls`
 - Source PDFs are intentionally ignored and will not be committed.
-- Latest substantive production deployment: `dpl_GPJLSjUZbg6rknkWaWzsRrgbaoj4` / `https://crm-3ghxvnvfy-ujjual.vercel.app` (corrected seed coverage and exact AI label; `READY`)
+- Latest substantive production deployment: `dpl_wf8zgoqd4XSP6wmtjnxqS8bzthTQ` / `https://crm-deqcg4lat-ujjual.vercel.app` (corrected seed coverage, exact AI label, and acceptance tests; `READY`)
 
 ## Checkpoint log
 
@@ -43,14 +43,15 @@ This file is the working handoff for the non-video assessment deliverables. All 
 13. 2026-08-19 IST — Rechecked every required production route on `crm-ujjual.vercel.app`, including `/crm/members/m11`: all 11 routes returned `302 Found` to Vercel SSO after the corrected deployment. Anonymous route access on that alias remains blocked.
 14. 2026-08-19 IST — Tested the existing project alias `crm-black-theta.vercel.app` directly without authentication: `/`, `/task-1`, `/task-2`, `/crm`, `/crm/members/m11`, `/crm/follow-up`, `/crm/new`, `/crm/highly-active`, `/crm/risk`, `/crm/help`, and `/task-4` all returned HTTP 200; the published JavaScript and CSS assets also returned HTTP 200. This alias is the verified anonymous submission host.
 15. 2026-08-19 IST — Normalized the deterministic-AI label to the exact brief wording `Simulated — deterministic rules; no LLM call.` in the recommendation, help, and Task 4 script. Commit `6cd698e` deployed as `dpl_GPJLSjUZbg6rknkWaWzsRrgbaoj4` (`READY`); post-deploy checks again returned HTTP 200 for all 11 routes and the published JavaScript/CSS assets, with clean build and runtime scans.
+16. 2026-08-19 IST — Added explicit automated checks for primary/current sourcing, score bounds, verified/assumed labels, complete five-touch fields, and the 90-day stop rule. Commit `61bfc28` deployed as `dpl_wf8zgoqd4XSP6wmtjnxqS8bzthTQ` (`READY`); the final suite is 12/12 tests passing, with clean build/runtime scans and all 11 public routes returning HTTP 200.
 
 ## Verification log
 
-Local checks: PASS — `pnpm run lint`, `pnpm run test` (11/11), and `pnpm run build`. Added tests cover CSV rows aligned with the ranked source dataset and 18 fictional records with all five states represented. Prior local browser QA passed the required routes and CRM flows.
+Local checks: PASS — `pnpm run lint`, `pnpm run test` (12/12), and `pnpm run build`. Tests cover source/ranking completeness, five-touch/stop-rule fields, CSV rows aligned with the ranked source dataset, state boundaries, and 18 fictional records with all five states represented. Prior local browser QA passed the required routes and CRM flows.
 
-GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, latest application commit `6cd698e5b922c3a2151082f310b00ad190dfd5c2` pushed to `main`. The handoff documentation update is included in the commit that contains this record; earlier deployment-evidence commits, the seed-coverage commit `2077c24`, and the code-fix commit `a7ca9ef` remain in the same history.
+GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, latest application/testing commit `61bfc2815267d0edfa5a787680d176421155b518` pushed to `main`. The handoff documentation update is included in the commit that contains this record; earlier deployment-evidence commits, the seed-coverage commit `2077c24`, the exact-label commit `6cd698e`, and the code-fix commit `a7ca9ef` remain in the same history.
 
-Vercel: deployment PASS — existing project/team IDs match the authorized target; corrected application deployment `dpl_GPJLSjUZbg6rknkWaWzsRrgbaoj4` is `READY`, build errors are clear, and the runtime-error scan is clear. Git connection PASS — the deployment was created from GitHub `main` commit `6cd698e5...`. Public anonymous access: PASS on `https://crm-black-theta.vercel.app`; all 11 required routes and the published JavaScript/CSS assets returned HTTP 200 without authentication. The other project aliases `crm-ujjual.vercel.app` and `crm-git-main-ujjual.vercel.app` remain SSO-protected and are not submission links.
+Vercel: deployment PASS — existing project/team IDs match the authorized target; corrected application deployment `dpl_wf8zgoqd4XSP6wmtjnxqS8bzthTQ` is `READY`, build errors are clear, and the runtime-error scan is clear. Git connection PASS — the deployment was created from GitHub `main` commit `61bfc281...`. Public anonymous access: PASS on `https://crm-black-theta.vercel.app`; all 11 required routes and the published JavaScript/CSS assets returned HTTP 200 without authentication. The other project aliases `crm-ujjual.vercel.app` and `crm-git-main-ujjual.vercel.app` remain SSO-protected and are not submission links.
 
 ### Vercel alias note
 
