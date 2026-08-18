@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { createDemoStore } from '../crm/seed'
 import { recommendNextStep } from '../domain/recommendation'
 import { deriveActivityState, getFollowUpReasons } from '../domain/rules'
 import type { Activity, Member } from '../domain/types'
@@ -79,5 +80,18 @@ describe('Friends of Finance activity state rules', () => {
     const after = recommendNextStep(withSignal, activities, now)
     expect(after).toEqual(before)
     expect(after.editableSuggestion).not.toContain('buy')
+  })
+
+  it('seeds 18 fictional records with all five states represented', () => {
+    const store = createDemoStore(now)
+    const counts = store.members.reduce<Record<string, number>>((result, member) => {
+      const state = deriveActivityState(member, store.activities, now)
+      result[state] = (result[state] ?? 0) + 1
+      return result
+    }, {})
+    expect(store.members).toHaveLength(18)
+    expect(['Newly joined', 'Highly active', 'Active', 'At risk', 'Dormant'].every((state) => (counts[state] ?? 0) >= 3)).toBe(true)
+    expect(store.members.every((member) => member.company.includes('(fictional)'))).toBe(true)
+    expect(store.activities.every((activity) => activity.sourceMarker === 'Manually logged fictional demo data')).toBe(true)
   })
 })

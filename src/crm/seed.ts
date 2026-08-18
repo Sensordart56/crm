@@ -127,6 +127,9 @@ export function createDemoStore(now = new Date()): CrmStore {
 
     activity('a23', 'm14', 72, 'Finance Workflows', 'post', 'Shared a fictional reporting handoff story.', now),
     activity('a24', 'm13', 70, 'Tools & Systems', 'reaction', 'Reacted to a tools thread.', now),
+    activity('a25', 'm04', 8, 'Finance Workflows', 'post', 'Shared a fictional approval-policy example.', now),
+    activity('a26', 'm05', 7, 'Tools & Systems', 'post', 'Shared a fictional close-migration follow-up.', now),
+    activity('a27', 'm06', 9, 'Ask Finance Peers', 'post', 'Shared a fictional data-ownership pattern.', now),
   ]
 
   return { version: 1, members, activities, owners }

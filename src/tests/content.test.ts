@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { professionals, priorityInvitee, rankedProfessionals, totalScore } from '../content/taskData'
 import { situations, touches } from '../content/taskTwoData'
+import { professionalsToCsv } from '../domain/csv'
 
 describe('assessment content', () => {
   it('contains exactly eight ranked professionals with two or more public sources each', () => {
@@ -19,5 +20,19 @@ describe('assessment content', () => {
     expect(situations.map((situation) => situation.label)).toEqual(['Situation A', 'Situation B', 'Situation C'])
     expect(situations[0].prompt).toBe('“I do not want to join another promotional group.”')
     expect(situations[1].prompt).toBe('“Is this a Volopay sales community?”')
+  })
+
+  it('keeps CSV rows aligned with the ranked source dataset and calculated totals', () => {
+    const lines = professionalsToCsv(rankedProfessionals).split('\n')
+
+    expect(lines).toHaveLength(9)
+    expect(lines[0]).toContain('"Rank"')
+    rankedProfessionals.forEach((person, index) => {
+      const columns = lines[index + 1].split(',')
+      expect(columns[0]).toBe(`"${index + 1}"`)
+      expect(columns[1]).toBe(`"${person.name}"`)
+      expect(columns[8]).toBe(`"${totalScore(person)}"`)
+      expect(columns[9]).toBe(`"${person.space}"`)
+    })
   })
 })
