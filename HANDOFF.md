@@ -24,7 +24,7 @@ This file is the working handoff for the non-video assessment deliverables. All 
 - Existing Vercel team: `Ujjual` / `ujjual` / `team_BxfzTkFmdMIYKzWpYMp3YxXO`
 - Existing Vercel project: `crm` / `prj_w9ijYVAmRl7VHtP5sbv6ythBPuls`
 - Source PDFs are intentionally ignored and will not be committed.
-- Production deployment: `dpl_8BGQ5EkQ7hmSHqfM5P83cv8dyq1U` / `https://crm-44x9d5dam-ujjual.vercel.app`
+- Latest production deployment: `dpl_A82hf2ZVzTh2XyPboNu7QVRLiCrp` / `https://crm-4kozhmvx1-ujjual.vercel.app`
 
 ## Checkpoint log
 
@@ -37,18 +37,20 @@ This file is the working handoff for the non-video assessment deliverables. All 
 7. 2026-08-19 01:08 IST — Existing Vercel project deployed commit `a7ca9ef` to production as `dpl_8BGQ5EkQ7hmSHqfM5P83cv8dyq1U`; deployment is `READY` and the stable aliases are present.
 8. 2026-08-19 01:16 IST — Re-ran local lint, tests, and production build: all passed; Vercel reports no runtime errors in the last 24 hours.
 9. 2026-08-19 01:18 IST — Anonymous route checks returned HTTP 302 to Vercel SSO on the stable aliases. Read-only protection inspection confirms `ssoProtection.deploymentType = all_except_custom_domains`. Disabling SSO was attempted twice and rejected by the environment’s production access-control safety gate; no indirect bypass was used.
+10. 2026-08-19 01:20 IST — The handoff commit `780b085` triggered the same existing GitHub-linked project; production deployment `dpl_A82hf2ZVzTh2XyPboNu7QVRLiCrp` is `READY`, build errors are clear, and Vercel reports no runtime errors in the last 24 hours.
+11. 2026-08-19 01:20 IST — Rechecked the latest production aliases: `/` returned `200 OK`, while `/task-1`, `/crm`, and `/task-4` returned `302 Found` to Vercel SSO. Direct route access therefore remains blocked.
 
 ## Verification log
 
 Local checks: PASS — `pnpm run lint`, `pnpm run test` (9/9), and `pnpm run build`. Prior local browser QA passed the required routes and CRM flows.
 
-GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, deployed commit `a7ca9efb63b3d8a51d32c1d2b62f246f937734d2` verified through the connected GitHub app and Vercel deployment metadata. Vercel metadata explicitly reports `githubOrg=Sensordart56`, `githubRepo=crm`, `githubCommitRef=main`, and `githubCommitSha=a7ca9ef...`.
+GitHub: PASS — public repository `https://github.com/Sensordart56/crm`, branch `main`, final handoff commit `780b08553ac81a97765fc46ac062e80e40c07315` verified through the connected GitHub app and Vercel deployment metadata. Vercel metadata explicitly reports `githubOrg=Sensordart56`, `githubRepo=crm`, `githubCommitRef=main`, and `githubCommitSha=780b085...`. The previous code-fix commit `a7ca9ef` is included in `main` history.
 
-Vercel: deployment PASS — existing project/team IDs match the authorized target; production deployment `dpl_8BGQ5EkQ7hmSHqfM5P83cv8dyq1U` is `READY`; build errors are clear; runtime-error scan is clear. Git connection PASS — the production deployment was created from the GitHub `main` commit above. Public anonymous access: BLOCKED — every tested route currently returns `302 Found` to `vercel.com/sso-api` because project SSO protection is enabled. A temporary share URL was generated for QA, but the connector’s fetch path still returned the SSO redirect, so it is not recorded as a public submission link.
+Vercel: deployment PASS — existing project/team IDs match the authorized target; latest production deployment `dpl_A82hf2ZVzTh2XyPboNu7QVRLiCrp` is `READY`; build errors are clear; runtime-error scan is clear. Git connection PASS — the latest deployment was created from GitHub `main` commit `780b085...`. Public anonymous access: BLOCKED — the root returned `200 OK`, but direct deliverable routes returned `302 Found` to `vercel.com/sso-api` because project SSO protection is enabled. A temporary share URL was generated for QA, but the connector’s fetch path still returned the SSO redirect, so it is not recorded as a public submission link.
 
 ### Exact remaining external blocker
 
-The only unmet acceptance item is anonymous public access. The existing Vercel project has persistent SSO deployment protection configured for all non-custom domains. Removing that setting is a production access-control weakening and was rejected by the environment safety gate twice. No duplicate project, alternate deployment, force-push, or indirect protection bypass was used. Once the project owner removes SSO in Vercel project settings, the four URLs above are the intended submission links; re-run the private-window route checks before submitting.
+The only unmet acceptance item is anonymous public access to the deliverable routes. The existing Vercel project has persistent SSO deployment protection configured for all non-custom domains. Removing that setting is a production access-control weakening and was rejected by the environment safety gate twice. No duplicate project, alternate deployment, force-push, or indirect protection bypass was used. Once the project owner removes SSO in Vercel project settings, the four URLs above are the intended submission links; re-run the private-window route checks before submitting.
 
 ## User-only morning checklist (09:00–10:00 IST)
 
