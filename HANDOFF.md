@@ -37,9 +37,9 @@ This file is the working handoff for the non-video assessment deliverables. All 
 
 Local checks: PASS — TypeScript, production build, 9/9 tests, and required-route/browser interaction QA.
 
-GitHub: repository verified through the connected GitHub app; local commit/push pending in this checkpoint.
+GitHub: repository verified through the connected GitHub app; local commit `c7955da` is ready. The attempted public push was stopped by the environment safety gate and requires direct confirmation for this exact destination.
 
-Vercel: existing project verified through the connected Vercel app; Git connection, production deployment, public URL, and anonymous-route results pending in this checkpoint.
+Vercel: existing project verified through the connected Vercel app; Git connection, production deployment, public URL, and anonymous-route results remain pending until external publish authorization is confirmed.
 
 ## User-only morning checklist (09:00–10:00 IST)
 
