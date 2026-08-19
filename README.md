@@ -2,6 +2,12 @@
 
 This is a static Vite + React + TypeScript submission hub and fictional community activity CRM. It has no backend, authentication, API keys, or live member data.
 
+## Open-access submission
+
+- Live site: https://crm-black-theta.vercel.app
+- Task 1 research: https://crm-black-theta.vercel.app/task-1
+- Task 2 invitation journey: https://crm-black-theta.vercel.app/task-2
+
 ## Routes
 
 - `/` submission hub
