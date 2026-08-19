@@ -8,17 +8,18 @@ import {
   useParams,
 } from 'react-router-dom'
 import { communitySources, priorityInvitee, professionals, rankOf, rankedProfessionals, scoringAnchors, totalScore } from './content/taskData'
-import { recordingChecklist, taskFourScript } from './content/taskFourData'
 import { situations, stopRule, touches } from './content/taskTwoData'
 import { createDemoStore } from './crm/seed'
 import { professionalsToCsv } from './domain/csv'
 import { recommendNextStep, type Recommendation } from './domain/recommendation'
 import {
+  compareFollowUpDueDates,
   deriveActivityState,
   dueStatus,
   elapsedDays,
   formatDate,
   getActivityStats,
+  getRollingActivityPulse,
   getFollowUpReasons,
   getMemberActivities,
   hasFollowUp,
@@ -112,16 +113,15 @@ function Layout() {
           <span className="brand-mark">F</span>
           <span><strong>Friends of Finance</strong><small>growth squad desk</small></span>
         </Link>
-        <div className="sidebar-label">Submission</div>
+        <div className="sidebar-label">Assessment pack</div>
         <nav className="side-nav" aria-label="Submission navigation">
-          <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>01</span>Home</NavLink>
-          <NavLink to="/task-1" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>02</span>Task 1 research</NavLink>
-          <NavLink to="/task-2" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>03</span>Task 2 journey</NavLink>
-          <NavLink to="/task-4" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>04</span>Task 4 script</NavLink>
+          <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>•</span>Home</NavLink>
+          <NavLink to="/task-1" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>01</span>Task 1 research</NavLink>
+          <NavLink to="/task-2" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>02</span>Task 2 journey</NavLink>
         </nav>
         <div className="sidebar-label crm-label">CRM workspace</div>
         <nav className="side-nav" aria-label="CRM navigation">
-          <NavLink to="/crm" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>↗</span>Overview</NavLink>
+          <NavLink to="/crm" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>03</span>Task 3 overview</NavLink>
           <NavLink to="/crm/follow-up" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>{followUpCount}</span>Follow-up</NavLink>
           <NavLink to="/crm/new" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>✦</span>Newly joined</NavLink>
           <NavLink to="/crm/highly-active" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}><span>↗</span>Highly active</NavLink>
@@ -140,7 +140,7 @@ function Layout() {
         </header>
         <div className="mobile-nav no-print">
           <Link to="/" className="brand"><span className="brand-mark">F</span><strong>FoF</strong></Link>
-          <div><Link to="/task-1">Task 1</Link><Link to="/task-2">Task 2</Link><Link to="/crm">CRM</Link><Link to="/task-4">Task 4</Link></div>
+          <div><Link to="/task-1">Task 1</Link><Link to="/task-2">Task 2</Link><Link to="/crm">CRM</Link></div>
         </div>
         <div className="page-wrap">
           <Routes>
@@ -155,7 +155,6 @@ function Layout() {
             <Route path="/crm/highly-active" element={<FocusedMembersPage focus="high" />} />
             <Route path="/crm/risk" element={<FocusedMembersPage focus="risk" />} />
             <Route path="/crm/help" element={<HelpPage />} />
-            <Route path="/task-4" element={<TaskFourPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
@@ -186,12 +185,11 @@ function HomePage() {
       </section>
       <div className="demo-notice"><span className="notice-icon">i</span><div><strong>Fictional data + simulated outreach</strong><p>Every CRM identity, employer, activity, and note is fictional. Task 1/2 messages are ready-to-send simulations only. No real professional has been contacted and no message can be sent from this app.</p></div></div>
       <section className="section-block">
-        <div className="section-heading"><div><span className="eyebrow">Deliverables</span><h2>Four handoff-ready surfaces</h2></div><span className="muted">Open access · no sign-in</span></div>
+        <div className="section-heading"><div><span className="eyebrow">Deliverables</span><h2>Three open-access work surfaces</h2></div><span className="muted">Open access · no sign-in</span></div>
         <div className="deliverable-grid">
           <DeliverableCard number="01" title="Research & prioritisation" description="Eight current finance professionals, public evidence, transparent scoring, top three, and one priority invitee." to="/task-1" status="Complete" />
           <DeliverableCard number="02" title="Invitation journey" description="Five-touch sequence, three exact situation responses, public-source mapping, and a clear stop rule." to="/task-2" status="Complete" />
           <DeliverableCard number="03" title="Community activity CRM" description={`${store.members.length} fictional members, derived state, follow-up work, history, and a human-reviewed next step aid.`} to="/crm" status="Live demo" />
-          <DeliverableCard number="04" title="Recording handoff" description="A 4:30–4:50 script with one At-risk scenario, operating trade-offs, and a clean recording checklist." to="/task-4" status="Ready for video" />
         </div>
       </section>
       <section className="home-lower-grid">
@@ -270,20 +268,20 @@ function CrmOverviewPage() {
     return matchesSearch && matchesState && matchesOwner && matchesSpace && matchesFollow
   }), [followFilter, now, ownerFilter, search, spaceFilter, stateFilter, store.activities, store.members, store.owners])
   const recent = [...store.activities].sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime()).slice(0, 5)
-  const activityPoints = store.activities.reduce((sum, activity) => sum + ({ post: 4, comment: 2, reaction: 1 }[activity.type]), 0)
+  const activityPulse = getRollingActivityPulse(store.activities, now)
 
   return (
     <div className="crm-page">
       <PageHeader eyebrow="Task 3 · fictional community activity CRM" title="The activity desk" intro="Make follow-up visible, keep state rules inspectable, and leave the final judgment with a human." actions={<><button type="button" className="button button-secondary" onClick={() => { if (window.confirm('Reset all fictional demo changes?')) resetDemo() }}>Reset demo data</button><Link to="/crm/members/new" className="button button-dark">Add member</Link></>} />
       <div className="crm-disclosure"><span className="notice-icon">✦</span><div><strong>Fictional demo workspace</strong><p>{store.members.length} fictional members · browser-local storage · no live community integration · no authentication</p></div><Link to="/crm/help" className="text-link">How it works ↗</Link></div>
       <section className="metric-grid">{(Object.keys(counts) as ActivityState[]).map((state) => <div className="metric-card" key={state}><div className={`metric-icon ${stateMeta[state].className}`}>{state === 'Newly joined' ? '✦' : state === 'Highly active' ? '↗' : state === 'Active' ? '•' : state === 'At risk' ? '!' : '×'}</div><span>{state}</span><strong>{counts[state]}</strong><small>{state === 'Newly joined' ? '0–14 days' : state === 'Highly active' ? '12+ pts / 30d' : state === 'Active' ? 'Meaningful / 30d' : state === 'At risk' ? 'Cooling / absent' : '60d+'}</small></div>)}<div className="metric-card metric-card-accent"><div className="metric-icon">!</div><span>Needs follow-up</span><strong>{store.members.filter((member) => hasFollowUp(member, store.activities, store.owners, now)).length}</strong><small>Due, unowned, risk, dormant</small></div></section>
-      <section className="overview-grid"><div className="card chart-card"><div className="card-heading"><div><span className="eyebrow">30-day pulse</span><h3>Activity at a glance</h3></div><Pill tone="teal">{activityPoints} points logged</Pill></div><div className="pulse-row"><div className="pulse-number"><strong>{store.activities.length}</strong><span>logged activities</span></div><div className="pulse-bars">{(Object.keys(counts) as ActivityState[]).map((state) => <div key={state} className="pulse-bar-wrap"><div className={`pulse-bar ${stateMeta[state].className}`} style={{ height: `${Math.max(12, counts[state] * 15)}px` }} /><small>{counts[state]}</small><span>{state === 'Newly joined' ? 'New' : state === 'Highly active' ? 'High' : state === 'Active' ? 'Act' : state === 'At risk' ? 'Risk' : 'Dorm'}</span></div>)}</div></div></div><div className="card recent-card"><div className="card-heading"><div><span className="eyebrow">Latest log</span><h3>Recent activity</h3></div><Link to="/crm" className="text-link">Refresh</Link></div><div className="recent-list">{recent.map((activity) => { const member = store.members.find((item) => item.id === activity.memberId); return <div className="recent-item" key={activity.id}><span className={`activity-type type-${activity.type}`}>{activity.type === 'post' ? 'P' : activity.type === 'comment' ? 'C' : 'R'}</span><div><strong>{member?.name ?? 'Unknown member'}</strong><span>{activity.space} · {relativeDate(activity.occurredAt, now)}</span></div></div>})}</div></div></section>
+      <section className="overview-grid"><div className="card chart-card"><div className="card-heading"><div><span className="eyebrow">30-day pulse</span><h3>Activity at a glance</h3></div><Pill tone="teal">{activityPulse.points} points logged</Pill></div><div className="pulse-row"><div className="pulse-number"><strong>{activityPulse.activityCount}</strong><span>logged activities</span></div><div className="pulse-bars">{(Object.keys(counts) as ActivityState[]).map((state) => <div key={state} className="pulse-bar-wrap"><div className={`pulse-bar ${stateMeta[state].className}`} style={{ height: `${Math.max(12, counts[state] * 15)}px` }} /><small>{counts[state]}</small><span>{state === 'Newly joined' ? 'New' : state === 'Highly active' ? 'High' : state === 'Active' ? 'Act' : state === 'At risk' ? 'Risk' : 'Dorm'}</span></div>)}</div></div></div><div className="card recent-card"><div className="card-heading"><div><span className="eyebrow">Latest log</span><h3>Recent activity</h3></div><Link to="/crm" className="text-link">Refresh</Link></div><div className="recent-list">{recent.map((activity) => { const member = store.members.find((item) => item.id === activity.memberId); return <div className="recent-item" key={activity.id}><span className={`activity-type type-${activity.type}`}>{activity.type === 'post' ? 'P' : activity.type === 'comment' ? 'C' : 'R'}</span><div><strong>{member?.name ?? 'Unknown member'}</strong><span>{activity.space} · {relativeDate(activity.occurredAt, now)}</span></div></div>})}</div></div></section>
       <section className="member-table-section"><div className="section-heading"><div><span className="eyebrow">Member directory</span><h2>Find the next useful action</h2></div><span className="muted">{filtered.length} of {store.members.length} shown</span></div><div className="filters card"><label className="search-field"><span>⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name, role, or company" aria-label="Search members" /></label><label><span>State</span><select value={stateFilter} onChange={(event) => setStateFilter(event.target.value as ActivityState | 'all')}><option value="all">All states</option>{Object.keys(stateMeta).map((state) => <option key={state} value={state}>{state}</option>)}</select></label><label><span>Owner</span><select value={ownerFilter} onChange={(event) => setOwnerFilter(event.target.value)}><option value="all">All owners</option><option value="unassigned">Unassigned</option>{store.owners.map((owner) => <option key={owner.id} value={owner.id}>{owner.displayName}</option>)}</select></label><label><span>Preferred space</span><select value={spaceFilter} onChange={(event) => setSpaceFilter(event.target.value as LoggedSpace | 'all')}><option value="all">All spaces</option>{LOGGED_SPACES.map((space) => <option key={space} value={space}>{space}</option>)}</select></label><label className="check-field"><input type="checkbox" checked={followFilter} onChange={(event) => setFollowFilter(event.target.checked)} /><span>Needs follow-up</span></label><button type="button" className="button button-ghost" onClick={() => { setSearch(''); setStateFilter('all'); setOwnerFilter('all'); setSpaceFilter('all'); setFollowFilter(false) }}>Clear</button></div><MemberList members={filtered} now={now} emptyMessage="No members match these filters." /></section>
     </div>
   )
 }
 
-function MemberList({ members, now, emptyMessage = 'No members found.' }: { members: Member[]; now: Date; emptyMessage?: string }) {
+function MemberList({ members, now, emptyMessage = 'No members found.', sortMode = 'default' }: { members: Member[]; now: Date; emptyMessage?: string; sortMode?: 'default' | 'follow-up' }) {
   const { store } = useCrm()
   const sorted = [...members].sort((a, b) => {
     const stateA = deriveActivityState(a, store.activities, now)
@@ -292,6 +290,10 @@ function MemberList({ members, now, emptyMessage = 'No members found.' }: { memb
     const followA = hasFollowUp(a, store.activities, store.owners, now)
     const followB = hasFollowUp(b, store.activities, store.owners, now)
     if (followA !== followB) return followA ? -1 : 1
+    if (sortMode === 'follow-up') {
+      const dueDifference = compareFollowUpDueDates(a, b, now)
+      if (dueDifference !== 0) return dueDifference
+    }
     if (riskOrder[stateA] !== riskOrder[stateB]) return riskOrder[stateA] - riskOrder[stateB]
     return a.name.localeCompare(b.name)
   })
@@ -305,7 +307,7 @@ function FollowUpPage() {
   const overdue = members.filter((member) => dueStatus(member, now) === 'overdue').length
   const unowned = members.filter((member) => !member.ownerId).length
   const risk = members.filter((member) => ['At risk', 'Dormant'].includes(deriveActivityState(member, store.activities, now))).length
-  return <div className="crm-page"><PageHeader eyebrow="CRM workspace · attention queue" title="Follow-up, with reasons" intro="A queue ordered by overdue work first, then due date, with risk and dormancy made visible." actions={<Link to="/crm" className="button button-secondary">Back to overview</Link>} /><section className="metric-grid queue-metrics"><div className="metric-card metric-card-accent"><span>Queue</span><strong>{members.length}</strong><small>Members with a reason</small></div><div className="metric-card"><span>Overdue</span><strong>{overdue}</strong><small>Next action date passed</small></div><div className="metric-card"><span>Unowned</span><strong>{unowned}</strong><small>Human assignment needed</small></div><div className="metric-card"><span>Risk / dormant</span><strong>{risk}</strong><small>Cooling or quiet records</small></div></section><div className="queue-callout"><strong>Every reason is shown on the member record.</strong><span>Needs follow-up can come from a due action, missing owner, risk/dormant state, or a newly joined member without a Say Hello post after seven days.</span></div><MemberList members={members} now={now} emptyMessage="The queue is clear." /></div>
+  return <div className="crm-page"><PageHeader eyebrow="CRM workspace · attention queue" title="Follow-up, with reasons" intro="A queue ordered by overdue work first, then due date, with risk and dormancy made visible." actions={<Link to="/crm" className="button button-secondary">Back to overview</Link>} /><section className="metric-grid queue-metrics"><div className="metric-card metric-card-accent"><span>Queue</span><strong>{members.length}</strong><small>Members with a reason</small></div><div className="metric-card"><span>Overdue</span><strong>{overdue}</strong><small>Next action date passed</small></div><div className="metric-card"><span>Unowned</span><strong>{unowned}</strong><small>Human assignment needed</small></div><div className="metric-card"><span>Risk / dormant</span><strong>{risk}</strong><small>Cooling or quiet records</small></div></section><div className="queue-callout"><strong>Every reason is shown on the member record.</strong><span>Needs follow-up can come from a due action, missing owner, risk/dormant state, or a newly joined member without a Say Hello post after seven days.</span></div><MemberList members={members} now={now} emptyMessage="The queue is clear." sortMode="follow-up" /></div>
 }
 
 function FocusedMembersPage({ focus }: { focus: 'new' | 'high' | 'risk' }) {
@@ -367,10 +369,6 @@ function CommercialSignalPanel({ signal, setSignal, saveSignal }: { signal: Comm
 
 function HelpPage() {
   return <div className="crm-page help-page"><PageHeader eyebrow="CRM workspace · rules & safeguards" title="Use the tool without overreading it" intro="The CRM makes recorded activity easier to inspect. It does not turn a browser demo into a shared system or a community interaction into a sales signal." actions={<Link to="/crm" className="button button-secondary">Back to overview</Link>} /><div className="help-grid"><section className="card help-card"><span className="eyebrow">Storage model</span><h2>Browser-local by design</h2><p>State is stored under <code>fof-crm:v1</code> in localStorage. Reloads persist changes in the same browser; other managers will not see them. Reset demo data restores the fictional seed.</p><div className="limitation-callout"><strong>Central limitation</strong><span>localStorage is browser-local and is not a shared multi-user CRM.</span></div></section><section className="card help-card"><span className="eyebrow">Activity boundaries</span><h2>Only documented spaces</h2><p>Activities can be logged only in the six discussion spaces below. Interviews & Stories and Curated Jobs are preferences or resource recommendations here, not invented likes, saves, attendance, or applications.</p><div className="space-chip-list">{LOGGED_SPACES.map((space) => <Pill tone="teal" key={space}>{space}</Pill>)}</div></section></div><section className="card rules-card"><div className="card-heading"><div><span className="eyebrow">Deterministic state calculator</span><h2>Precedence and boundaries</h2></div><Pill tone="orange">Derived · not manually editable</Pill></div><div className="rules-table"><div className="rules-row rules-header"><span>Priority</span><span>State</span><span>Rule</span></div><div className="rules-row"><span>01</span><strong><StateBadge state="Newly joined" /></strong><span>Joined 0–14 elapsed days ago.</span></div><div className="rules-row"><span>02</span><strong><StateBadge state="Highly active" /></strong><span>Not new; 12+ points in rolling 30 days; 3+ meaningful activities across 2+ spaces and 3 dates; latest meaningful activity within 7 days.</span></div><div className="rules-row"><span>03</span><strong><StateBadge state="Active" /></strong><span>Not above; at least one meaningful post or comment within 30 days.</span></div><div className="rules-row"><span>04</span><strong><StateBadge state="At risk" /></strong><span>No meaningful activity and joined 15–60 days ago, or latest meaningful activity is 31–60 days old.</span></div><div className="rules-row"><span>05</span><strong><StateBadge state="Dormant" /></strong><span>No meaningful activity and joined over 60 days ago, or latest meaningful activity is over 60 days old.</span></div></div><div className="weights-row"><span>Weights</span><Pill>Post · 4</Pill><Pill>Comment · 2</Pill><Pill>Reaction · 1</Pill><span className="muted">Reactions add points but cannot independently qualify a member.</span></div></section><section className="card help-card"><span className="eyebrow">Simulated AI safeguard</span><h2>Recommendation, not automation</h2><p>The aid is deterministic and labeled “Simulated — deterministic rules; no LLM call.” It uses only member fields, derived state, activity history, preferred spaces, owner, and next action. It shows evidence and human checks, produces editable/copyable wording, never sends, never fabricates personalisation, and never reads the commercial-signal field.</p><div className="two-column-note"><div><strong>Commercial signal</strong><span>Human-entered, separate, review-required, excluded from state and recommendation inputs.</span></div><div><strong>Human override</strong><span>Discard the suggestion, change the next action, or choose pause whenever the recorded context is not enough.</span></div></div></section><section className="card test-card"><div className="card-heading"><div><span className="eyebrow">Exact testing steps</span><h2>QA the operating decisions</h2></div><Pill tone="teal">Ready for demo</Pill></div><ol className="test-list"><li>Reset demo data and confirm all five states appear in the overview.</li><li>Search by member name, role, and company; filter by state, owner, preferred space, and needs-follow-up; clear filters.</li><li>Open a member, edit owner/next action/notes, reload, and confirm persistence.</li><li>Log a post or comment and confirm history and derived state update immediately.</li><li>Log a reaction only and confirm it cannot independently make a member Active or Highly active.</li><li>Open the Highly active view and verify points, meaningful activity, spaces, distinct dates, and recency.</li><li>Change the commercial signal, then confirm state and the simulated AI evidence/recommendation do not change.</li><li>Use Copy suggestion; confirm there is no send control and all wording remains editable.</li><li>Open Task 1 and Task 2, test external source links, CSV download, and Print / Save PDF.</li></ol></section></div>
-}
-
-function TaskFourPage() {
-  return <div className="task-four-page"><PageHeader eyebrow="Task 4 · recording preparation" title="A 4:30–4:50 handoff script" intro="Do not record or upload from this workspace. Use this page as the morning rehearsal guide for one representative At-risk scenario." actions={<Link to={`/crm/members/${taskFourScript.memberId}`} className="button button-dark">Open representative member</Link>} /><div className="script-meta-grid"><div className="script-meta-card"><span className="eyebrow">Target duration</span><strong>{taskFourScript.targetDuration}</strong><small>Keep the final video under five minutes</small></div><div className="script-meta-card"><span className="eyebrow">Estimated word count</span><strong>{taskFourScript.wordCount}</strong><small>Explain decisions, not a feature list</small></div><div className="script-meta-card"><span className="eyebrow">Scenario</span><strong>At risk</strong><small>{taskFourScript.memberLabel}</small></div></div><div className="task-four-grid"><article className="card script-card"><div className="card-heading"><div><span className="eyebrow">Read aloud</span><h2>{taskFourScript.title}</h2></div><Pill tone="orange">No recording here</Pill></div><div className="script-copy">{taskFourScript.script.split('\n\n').map((paragraph) => <p key={paragraph.slice(0, 30)}>{paragraph}</p>)}</div></article><aside className="card checklist-card"><span className="eyebrow">Morning checklist</span><h2>Before you press record</h2><ol>{recordingChecklist.map((item) => <li key={item}><span className="check-circle">✓</span><span>{item}</span></li>)}</ol><div className="video-placeholder"><span className="eyebrow">Submission placeholder</span><strong>[USER TO ADD AFTER RECORDING/UPLOAD]</strong><small>Verify anonymous playback before submitting.</small></div></aside></div></div>
 }
 
 function NotFoundPage() {

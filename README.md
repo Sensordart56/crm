@@ -10,7 +10,6 @@ This is a static Vite + React + TypeScript submission hub and fictional communit
 - `/crm` overview and filters
 - `/crm/members/:id` editable member detail, history, simulated next step, and separate commercial-signal review
 - `/crm/follow-up`, `/crm/new`, `/crm/highly-active`, `/crm/risk`, `/crm/help`
-- `/task-4` recording script and checklist
 
 ## Local commands
 

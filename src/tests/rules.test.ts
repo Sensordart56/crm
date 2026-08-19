@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createDemoStore } from '../crm/seed'
 import { recommendNextStep } from '../domain/recommendation'
-import { deriveActivityState, getFollowUpReasons } from '../domain/rules'
+import { compareFollowUpDueDates, deriveActivityState, getFollowUpReasons, getRollingActivityPulse } from '../domain/rules'
 import type { Activity, Member } from '../domain/types'
 
 const now = new Date(2026, 7, 19, 12, 0, 0)
@@ -70,6 +70,40 @@ describe('Friends of Finance activity state rules', () => {
     member.ownerId = null
     const reasons = getFollowUpReasons(member, [], [], now)
     expect(reasons).toEqual(expect.arrayContaining(['Next action is due today', 'No owner assigned', 'Newly joined for 7+ days without a Say Hello post']))
+  })
+
+  it('limits the overview pulse to activity from the rolling 30-day window', () => {
+    const activities = [
+      makeActivity('recent-post', 1, 'post'),
+      makeActivity('boundary-comment', 30, 'comment'),
+      makeActivity('old-reaction', 31, 'reaction'),
+      makeActivity('future-post', -1, 'post'),
+    ]
+    expect(getRollingActivityPulse(activities, now)).toEqual({ activityCount: 2, points: 6 })
+  })
+
+  it('orders follow-up records by overdue status and then due date', () => {
+    const oldestOverdue = makeMember(40)
+    oldestOverdue.id = 'oldest-overdue'
+    oldestOverdue.nextAction.dueDate = dateKeyDaysAgo(5)
+
+    const newerOverdue = makeMember(40)
+    newerOverdue.id = 'newer-overdue'
+    newerOverdue.nextAction.dueDate = dateKeyDaysAgo(2)
+
+    const futureDue = makeMember(40)
+    futureDue.id = 'future-due'
+    futureDue.nextAction.dueDate = dateKeyDaysAgo(-3)
+
+    const noDueDate = makeMember(40)
+    noDueDate.id = 'no-due-date'
+    noDueDate.nextAction.dueDate = ''
+
+    const sortedIds = [futureDue, noDueDate, newerOverdue, oldestOverdue]
+      .sort((a, b) => compareFollowUpDueDates(a, b, now))
+      .map((member) => member.id)
+
+    expect(sortedIds).toEqual(['oldest-overdue', 'newer-overdue', 'future-due', 'no-due-date'])
   })
 
   it('keeps commercial signals outside the recommendation inputs', () => {

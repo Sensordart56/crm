@@ -8,6 +8,11 @@ export const ACTIVITY_POINTS: Record<Activity['type'], number> = {
 
 export const MEANINGFUL_TYPES: Activity['type'][] = ['post', 'comment']
 
+export type ActivityPulse = {
+  activityCount: number
+  points: number
+}
+
 export type ActivityStats = {
   points30: number
   meaningful30: number
@@ -76,6 +81,18 @@ export function getActivityStats(member: Member, activities: Activity[], now = n
   }
 }
 
+export function getRollingActivityPulse(activities: Activity[], now = new Date(), days = 30): ActivityPulse {
+  const recentActivities = activities.filter((activity) => {
+    const age = elapsedDays(activity.occurredAt, now)
+    return age >= 0 && age <= days
+  })
+
+  return {
+    activityCount: recentActivities.length,
+    points: recentActivities.reduce((sum, activity) => sum + ACTIVITY_POINTS[activity.type], 0),
+  }
+}
+
 export function deriveActivityState(member: Member, activities: Activity[], now = new Date()): ActivityState {
   const joinedAge = elapsedDays(member.joinedAt, now)
   if (joinedAge >= 0 && joinedAge <= 14) return 'Newly joined'
@@ -108,6 +125,18 @@ export function dueStatus(member: Member, now = new Date()): 'overdue' | 'due' |
   if (age > 0) return 'overdue'
   if (age === 0) return 'due'
   return null
+}
+
+export function compareFollowUpDueDates(a: Member, b: Member, now = new Date()): number {
+  const overdueA = dueStatus(a, now) === 'overdue'
+  const overdueB = dueStatus(b, now) === 'overdue'
+  if (overdueA !== overdueB) return overdueA ? -1 : 1
+
+  const dueDateA = a.nextAction.status === 'planned' && a.nextAction.text ? a.nextAction.dueDate : ''
+  const dueDateB = b.nextAction.status === 'planned' && b.nextAction.text ? b.nextAction.dueDate : ''
+  if (dueDateA && dueDateB) return parseLocalDate(dueDateA).getTime() - parseLocalDate(dueDateB).getTime()
+  if (dueDateA !== dueDateB) return dueDateA ? -1 : 1
+  return 0
 }
 
 export function getFollowUpReasons(member: Member, activities: Activity[], owners: { id: string }[], now = new Date()): string[] {

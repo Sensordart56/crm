@@ -93,7 +93,7 @@ export function createDemoStore(now = new Date()): CrmStore {
     member('m17', 'Rory Kim', 'Finance Systems Analyst', 'Willow Ledger House', 36, 'owner-priya', ['Tools & Systems'], 'Offer one systems question, then pause', 4, 'Last meaningful post is outside 30 days.', now),
 
     member('m13', 'Quinn Harper', 'Accounts Payable Lead', 'Pine Meridian Group', 75, 'owner-noah', ['Finance Workflows', 'Tools & Systems'], 'Review whether a future signal justifies re-entry', -10, 'No meaningful activity; due task is intentionally overdue.', now),
-    member('m14', 'Alexis Monroe', 'Financial Reporting Manager', 'Glass Harbor Partners', 95, 'owner-priya', ['Finance Workflows', 'Career & Compensation'], 'Do not chase; monitor for a new public signal', -5, 'Representative dormant record for Task 4 preparation.', now),
+    member('m14', 'Alexis Monroe', 'Financial Reporting Manager', 'Glass Harbor Partners', 95, 'owner-priya', ['Finance Workflows', 'Career & Compensation'], 'Do not chase; monitor for a new public signal', -5, 'Dormant record with a clearly documented pause decision.', now),
     member('m15', 'Cameron Wells', 'AP and Expense Specialist', 'Amber Field Studio', 130, null, ['Tools & Systems', 'Water Cooler'], 'Keep unowned until a human reviews the record', 9, 'No activity and no owner are recorded.', now),
     member('m18', 'Drew Calder', 'Finance Program Manager', 'Fable Coast Works', 82, 'owner-ava', ['Career & Compensation', 'Water Cooler'], 'Wait for a genuinely new relevant signal', 12, 'Long quiet period; no meaningful activity.', now),
   ]
